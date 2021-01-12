@@ -2,11 +2,13 @@
 
 
 import {View , Button, TextInput, ScrollView, StyleSheet} from 'react-native'
-import { Value } from 'react-native-reanimated';
 
-const CreateUserScreen = () => {
+import firebase from '../database/firebase';
 
-        const [state, setState] = ueseState({
+
+const CreateUserScreen = (props) => {
+
+        const [state, setState] = useState({
             name:'',
             email:'',
             phone:''
@@ -15,25 +17,45 @@ const CreateUserScreen = () => {
             setState({ ...state, [name]: value})
         }
 
+        const saveNewUser =async ()=>{
+            if (state.name === ''){
+                alert('Please provide a name')
+            }else{
+            try {
+                console.log(state)
+            await firebase.db.collection('users').add({
+                name: state.name,
+                email: state.email,
+                phone: state.phone
+            })
+            props.navigation.navigate('UserList');
+            } catch (error) {
+                console.log(error)
+            }
+            
+        
+        }
+    }
+
     return (
       <ScrollView style ={ styles.container}>
           <View style ={ styles.inputGroup}>
               <TextInput placeholder="Name User" 
-              onChangeText={(value) =handleChangeText('name', value)}
+             onChangeText={(value) =>handleChangeText('name', value)}
               />
           </View>
           <View style ={ styles.inputGroup}>
               <TextInput placeholder="Email User"
-               onChangeText={(value) =handleChangeText('name', value)}
+               onChangeText={(value) =>handleChangeText('email', value)}
               />
           </View>
           <View style ={ styles.inputGroup}>
               <TextInput placeholder="Phone User"
-               onChangeText={(value) =handleChangeText('name', value)}
+              onChangeText={(value) =>handleChangeText('phone', value)}
               />
           </View>
           <View>
-              <Button title="Save User" />
+              <Button title="Save User" onPress={() => saveNewUser()} />
           </View>
       </ScrollView>
       );
